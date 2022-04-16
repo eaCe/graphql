@@ -1,0 +1,27 @@
+package: graphql
+version: "0.0.1-dev"
+name: GraphQL
+author: eaCe
+supportpage: https://github.com/eace/graphql
+
+page:
+  title: GraphiQL
+  perm: admin
+  hasLayout: false
+  icon: rex-icon fa-file-code-o
+  linkAttr: { target: _blank }
+
+requires:
+  redaxo: ^5.12.0
+  php:
+    version: '>=7.1'
+
+installer_ignore:
+  - node_modules
+  - .git
+  - .gitignore
+  - .gitignore
+  - .github
+  - package.json
+  - yarn.lock
+  - resources
