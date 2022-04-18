@@ -14,25 +14,27 @@ class RexGraphQLAuth
     public function __construct(string $username, string $password) {
         $this->username = $username;
         $this->password = $password;
-        $this->secret = rex_config::get('graphql', 'key');
+        $this->secret = \rex_config::get('graphql', 'key');
     }
 
     /**
-     * login and retrieve a token
+     * login and retrieve a token or an error...
      * @return bool
      * @throws \rex_exception
+     * @throws \Throwable
      */
     public function login() {
         $login = new \rex_login();
+        $login->setLoginQuery('SELECT * FROM ' . \rex::getTable('user') . ' WHERE status = 1 AND login = :login');
         $login->setLogin($this->username, $this->password, false);
         $loginCheck = $login->checkLogin();
 
         if ($loginCheck) {
             $this->user = $login->getUser();
-            return $this->getJWT();
+            return $this->getToken();
         }
 
-        return $loginCheck;
+        throw new \GraphQL\Error\UserError(\rex_i18n::msg('login_error'));
     }
 
     /**
@@ -52,7 +54,7 @@ class RexGraphQLAuth
      */
     private function getToken(bool $refreshToken = false): string {
         $key = $this->secret;
-        $issuedAt = new DateTimeImmutable();
+        $issuedAt = new \DateTimeImmutable();
         $expire = $issuedAt->modify('+10 minutes')->getTimestamp();
 
         if ($refreshToken) {
@@ -61,17 +63,13 @@ class RexGraphQLAuth
 
         $data = [
             'iat' => $issuedAt->getTimestamp(),
-            'iss' => rex::getServer(),
+            'iss' => \rex::getServer(),
             'nbf' => $issuedAt->getTimestamp(),
             'exp' => $expire,
-            'userName' => $this->username,
+            'name' => $this->username,
         ];
 
-        return JWT::encode(
-            $data,
-            $key,
-            'HS512'
-        );
+        return JWT::encode($data, $key, 'HS256');
     }
 
     /**
@@ -80,8 +78,8 @@ class RexGraphQLAuth
      * @return bool
      */
     private function checkToken(string $token): bool {
-        $token = JWT::decode($token, $this->secret, ['HS512']);
-        $now = new DateTimeImmutable();
+        $token = JWT::encode($token, $this->secret, ['HS512']);
+        $now = new \DateTimeImmutable();
 
         return !($token->iss !== rex::getServer() ||
             $token->nbf > $now->getTimestamp() ||
@@ -93,7 +91,7 @@ class RexGraphQLAuth
      * @param string $authorizationHeader The "Authorization" header field.
      * @return bool|string
      */
-    public function getAuthorizationBearerToken($authorizationHeader) {
+    public function getAuthorizationBearerToken(string $authorizationHeader) {
         if ($authorizationHeader === '') {
             return false;
         }
@@ -106,6 +104,7 @@ class RexGraphQLAuth
         ) {
             return $matches[1];
         }
+
         return false;
     }
 }

@@ -1,6 +1,7 @@
 {
     "require": {
         "webonyx/graphql-php": "^14.11",
-        "firebase/php-jwt": "^6.1"
+        "firebase/php-jwt": "^6.1",
+        "mll-lab/graphql-php-scalars": "^5.4"
     }
 }
