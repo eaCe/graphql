@@ -9,19 +9,22 @@ class RexGraphQLAuth
 {
     /**
      * login and retrieve a token or an error...
-     * @return bool
+     * @return array
      * @throws \rex_exception
      * @throws \Throwable
      */
     public static function login(string $username, string $password) {
-        $secret = \rex_config::get('graphql', 'key');
         $login = new \rex_login();
         $login->setLoginQuery('SELECT * FROM ' . \rex::getTable('user') . ' WHERE status = 1 AND login = :login');
         $login->setLogin($username, $password, false);
         $loginCheck = $login->checkLogin();
 
         if ($loginCheck) {
-            return self::getToken($login->getUser(), false);
+            $user = $login->getUser();
+            return [
+                'token' => self::getToken($user),
+                'refresh_token' => self::getToken($user, true)
+            ];
         }
 
         throw new \GraphQL\Error\UserError(\rex_i18n::msg('login_error'));

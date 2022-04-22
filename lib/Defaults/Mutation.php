@@ -2,7 +2,6 @@
 
 namespace RexGraphQL\Defaults;
 
-use GraphQL\Type\Definition\NonNull;
 use GraphQL\Type\Definition\ResolveInfo;
 use RexGraphQL\RexGraphQL;
 use RexGraphQL\RexGraphQLAuth;
@@ -20,15 +19,12 @@ class Mutation
          */
         $loginMutation = [
             'login' => [
-                'type' => Types::string(),
+                'type' => Types::token(),
                 'description' => 'Login an receive a JWT Token',
                 'args' => [
                     'user' => Types::string(),
                     'password' => Types::string(),
                 ],
-                'resolve' => function ($root, array $args, $context, ResolveInfo $info) {
-                    return RexGraphQLAuth::login($args['user'], $args['password']);
-                }
             ],
         ];
 
