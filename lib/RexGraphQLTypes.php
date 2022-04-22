@@ -6,6 +6,7 @@ use Closure;
 use Exception;
 use GraphQL\Type\Definition\ScalarType;
 use GraphQL\Type\Definition\Type;
+use RexGraphQL\Type\TokenType;
 use RexGraphQL\Type\UserType;
 use function lcfirst;
 use function method_exists;
@@ -26,8 +27,12 @@ final class Types
         return self::get(UserType::class);
     }
 
+    public static function token(): callable {
+        return self::get(TokenType::class);
+    }
+
     /**
-     * @param class-string<Type> $classname
+     * @param string $classname
      * @return Closure(): Type
      */
     private static function get(string $classname): Closure {
@@ -35,10 +40,16 @@ final class Types
     }
 
     /**
-     * @param class-string<Type> $classname
+     * @param string $classname
+     * @return Type
      */
     private static function byClassName(string $classname): Type {
         $parts = explode('\\', $classname);
+        $filename = __DIR__ . DIRECTORY_SEPARATOR . str_replace('RexGraphQL'.DIRECTORY_SEPARATOR, '', $classname) . '.php';
+
+        if (is_readable($filename)) {
+            require_once($filename);
+        }
 
         $withoutTypePrefix = preg_replace('~Type$~', '', $parts[count($parts) - 1]);
         assert(is_string($withoutTypePrefix), 'regex is statically known to be correct');
@@ -52,6 +63,9 @@ final class Types
         return self::$types[$cacheName];
     }
 
+    /**
+     * @throws Exception
+     */
     public static function byTypeName(string $shortName): Type {
         $cacheName = strtolower($shortName);
         $type = null;
