@@ -2,6 +2,7 @@
 
 namespace RexGraphQL;
 
+use GraphQL\Error\DebugFlag;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Schema;
 use GraphQL\Server\StandardServer;
@@ -44,20 +45,23 @@ class RexGraphQL
      */
     public static function handleRoute() {
         if (mb_substr(self::getCurrentPath(), 1, mb_strlen(self::$route)) === self::$route) {
-            $context = new RexGraphQLContext();
-            $context->rootUrl = \rex::getServer();
-            $context->request = $_REQUEST;
+                $context = new RexGraphQLContext();
+                $context->rootUrl = \rex::getServer();
+                $context->headers = apache_request_headers();
+                $context->request = $_REQUEST;
+                $context->user = RexGraphQLAuth::getContextUser($context->headers);
 
-            $schema = new Schema(self::getSchemaDefinition());
+                $schema = new Schema(self::getSchemaDefinition());
 
-            $server = new StandardServer([
-                'schema' => $schema,
-                'context' => $context,
-            ]);
+                $server = new StandardServer([
+                    'schema' => $schema,
+                    'context' => $context,
+                    'debugFlag' => DebugFlag::INCLUDE_DEBUG_MESSAGE,
+                ]);
 
-            header('Content-Type: application/json');
-            $server->handleRequest();
-            exit();
+                header('Content-Type: application/json');
+                $server->handleRequest();
+                exit();
         }
     }
 
@@ -70,12 +74,14 @@ class RexGraphQL
 
         $query = new ObjectType([
             'name' => 'Query',
-            'fields' => self::$queries
+            'fields' => self::$queries,
+            'resolveField' => function ($root, $args) { return $args; },
         ]);
 
         $mutation = new ObjectType([
             'name' => 'Mutation',
-            'fields' => self::$mutations
+            'fields' => self::$mutations,
+            'resolveField' => function ($root, $args) { return $args; },
         ]);
 
         if (!empty(self::$mutations)) {

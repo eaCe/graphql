@@ -2,6 +2,7 @@
 
 namespace RexGraphQL\Defaults;
 
+use GraphQL\Type\Definition\NonNull;
 use GraphQL\Type\Definition\ResolveInfo;
 use RexGraphQL\RexGraphQL;
 use RexGraphQL\RexGraphQLAuth;
@@ -26,7 +27,7 @@ class Mutation
                     'password' => Types::string(),
                 ],
                 'resolve' => function ($root, array $args, $context, ResolveInfo $info) {
-                    return (new RexGraphQLAuth($args['user'], $args['password']))->login();
+                    return RexGraphQLAuth::login($args['user'], $args['password']);
                 }
             ],
         ];

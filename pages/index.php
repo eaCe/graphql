@@ -6,7 +6,7 @@
 
 <script src="https://unpkg.com/graphiql/graphiql.min.js" type="application/javascript"></script>
 <script>
-    function graphQLFetcher(graphQLParams) {
+    function graphQLFetcher(graphQLParams, opts = {headers: {}}) {
         return fetch(
             '<?=\RexGraphQL\RexGraphQL::getURL()?>',
             {
@@ -14,6 +14,7 @@
                 headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
+                    ...opts.headers
                 },
                 body: JSON.stringify(graphQLParams),
                 credentials: 'omit',
@@ -28,7 +29,8 @@
     ReactDOM.render(
         React.createElement(GraphiQL, {
             fetcher: graphQLFetcher,
-            defaultVariableEditorOpen: true,
+            headerEditorEnabled: true,
+            shouldPersistHeaders: true,
         }),
         document.getElementById('graphiql'),
     );

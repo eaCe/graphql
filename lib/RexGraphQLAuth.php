@@ -3,35 +3,25 @@
 namespace RexGraphQL;
 
 use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 
 class RexGraphQLAuth
 {
-    private $username;
-    private $password;
-    private $secret;
-    private $user;
-
-    public function __construct(string $username, string $password) {
-        $this->username = $username;
-        $this->password = $password;
-        $this->secret = \rex_config::get('graphql', 'key');
-    }
-
     /**
      * login and retrieve a token or an error...
      * @return bool
      * @throws \rex_exception
      * @throws \Throwable
      */
-    public function login() {
+    public static function login(string $username, string $password) {
+        $secret = \rex_config::get('graphql', 'key');
         $login = new \rex_login();
         $login->setLoginQuery('SELECT * FROM ' . \rex::getTable('user') . ' WHERE status = 1 AND login = :login');
-        $login->setLogin($this->username, $this->password, false);
+        $login->setLogin($username, $password, false);
         $loginCheck = $login->checkLogin();
 
         if ($loginCheck) {
-            $this->user = $login->getUser();
-            return $this->getToken();
+            return self::getToken($login->getUser(), false);
         }
 
         throw new \GraphQL\Error\UserError(\rex_i18n::msg('login_error'));
@@ -49,11 +39,13 @@ class RexGraphQLAuth
 
     /**
      * get the jwt for the logged in user
+     * @param \rex_sql $user
      * @param bool $refreshToken
      * @return string
+     * @throws \rex_sql_exception
      */
-    private function getToken(bool $refreshToken = false): string {
-        $key = $this->secret;
+    private static function getToken(\rex_sql $user, bool $refreshToken = false): string {
+        $secret = \rex_config::get('graphql', 'key');
         $issuedAt = new \DateTimeImmutable();
         $expire = $issuedAt->modify('+10 minutes')->getTimestamp();
 
@@ -66,10 +58,10 @@ class RexGraphQLAuth
             'iss' => \rex::getServer(),
             'nbf' => $issuedAt->getTimestamp(),
             'exp' => $expire,
-            'name' => $this->username,
+            'id' => $user->getValue('id'),
         ];
 
-        return JWT::encode($data, $key, 'HS256');
+        return JWT::encode($data, $secret, 'HS256');
     }
 
     /**
@@ -77,13 +69,24 @@ class RexGraphQLAuth
      * @param string $token
      * @return bool
      */
-    private function checkToken(string $token): bool {
-        $token = JWT::encode($token, $this->secret, ['HS512']);
+    private static function checkToken(string $token): bool {
+        $secret = \rex_config::get('graphql', 'key');
+        $decodedToken = JWT::decode($token, new Key($secret, 'HS256'));
         $now = new \DateTimeImmutable();
 
-        return !($token->iss !== rex::getServer() ||
-            $token->nbf > $now->getTimestamp() ||
-            $token->exp < $now->getTimestamp());
+        return !($decodedToken->iss !== \rex::getServer() ||
+            $decodedToken->nbf > $now->getTimestamp() ||
+            $decodedToken->exp < $now->getTimestamp());
+    }
+
+    /**
+     * @param string $token
+     * @return \rex_user|null
+     */
+    private static function getUserFromToken(string $token) {
+        $secret = \rex_config::get('graphql', 'key');
+        $decodedToken = JWT::decode($token, new Key($secret, 'HS256'));
+        return \rex_user::get($decodedToken->id);
     }
 
     /**
@@ -91,7 +94,7 @@ class RexGraphQLAuth
      * @param string $authorizationHeader The "Authorization" header field.
      * @return bool|string
      */
-    public function getAuthorizationBearerToken(string $authorizationHeader) {
+    private static function getAuthorizationBearerToken(string $authorizationHeader) {
         if ($authorizationHeader === '') {
             return false;
         }
@@ -106,5 +109,32 @@ class RexGraphQLAuth
         }
 
         return false;
+    }
+
+    /**
+     * check if a user is available
+     * @param RexGraphQLContext $context
+     * @return void
+     * @throws \Exception
+     */
+    public static function protect(RexGraphQLContext $context): void {
+        if(!isset($context->user) && $context->user === null) {
+            throw new \Exception(\rex_i18n::msg('logged_out'));
+        }
+    }
+
+    /**
+     * get the current user
+     * @param $headers
+     * @return \rex_user|void|null
+     */
+    public static function getContextUser($headers) {
+        if(isset($headers['Authorization'])) {
+            $token = self::getAuthorizationBearerToken($headers['Authorization']);
+
+            if(self::checkToken($token)) {
+                return self::getUserFromToken($token) ?: null;
+            }
+        }
     }
 }

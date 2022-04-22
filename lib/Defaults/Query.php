@@ -4,6 +4,7 @@ namespace RexGraphQL\Defaults;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use RexGraphQL\RexGraphQL;
+use RexGraphQL\RexGraphQLAuth;
 use RexGraphQL\Types;
 
 class Query
@@ -20,9 +21,6 @@ class Query
             'me' => [
                 'type' => Types::user(),
                 'description' => 'Get the currently authenticated user',
-                'resolveField' => function ($root, array $args, $context, ResolveInfo $info) {
-                    return $args;
-                }
             ],
         ];
 
