@@ -1,6 +1,9 @@
 # :construction: WIP GraphQL für REDAXO 5
 
 Das Addon nutzt [graphql-php](https://github.com/webonyx/graphql-php) und bindet im Backend [GraphiQL](https://github.com/graphql/graphiql) zum testen der Queries ein.
+
+![graphi](https://user-images.githubusercontent.com/2708231/164885012-5cb29831-83f6-4f13-89ee-a7532e647f0f.JPG)
+
 Weiter gibt es eine einfache Möglichkeit Nutzer*innen zu authentifizieren.
 
 Hierfür kann die `login` Mutation genutzt werden:
