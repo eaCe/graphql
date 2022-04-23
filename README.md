@@ -50,7 +50,7 @@ $rexArticleSliceType = new ObjectType([
             'type' => Type::listOf($rexModuleType),
             'resolve' => static function ($articleSlice, array $args, $context, ResolveInfo $info) {
                 return rex_sql::factory()->getArray(
-                    'SELECT * FROM `rex_module` WHERE `id` = '.$articleSlice['module_id']
+                    'SELECT * FROM `rex_module` WHERE `id` = :id', ['id' => $articleSlice['module_id']]
                 );
             },
         ],
@@ -67,7 +67,7 @@ $rexArticleType = new ObjectType([
             'type' => Type::listOf($rexArticleSliceType),
             'resolve' => static function ($article, array $args, $context, ResolveInfo $info) {
                 return rex_sql::factory()->getArray(
-                    'SELECT * FROM `rex_article_slice` WHERE `article_id` = '.$article['id']
+                    'SELECT * FROM `rex_article_slice` WHERE `article_id` = :id', ['id' => $article['id']]
                 );
             },
         ],
