@@ -1,6 +1,13 @@
-<script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
-<link rel="stylesheet" href="https://unpkg.com/graphiql/graphiql.min.css"/>
+<html dir="ltr" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="robots" content="noindex">
+    <title>GraphiQL</title>
+    <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/graphiql/graphiql.min.css"/>
+</head>
+<body>
 
 <div id="graphiql">Loading...</div>
 
@@ -35,3 +42,5 @@
         document.getElementById('graphiql'),
     );
 </script>
+</body>
+</html>
