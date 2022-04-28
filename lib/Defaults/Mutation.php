@@ -2,9 +2,7 @@
 
 namespace RexGraphQL\Defaults;
 
-use GraphQL\Type\Definition\ResolveInfo;
 use RexGraphQL\RexGraphQL;
-use RexGraphQL\RexGraphQLAuth;
 use RexGraphQL\Types;
 
 class Mutation

@@ -4,6 +4,7 @@ namespace RexGraphQL;
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
+use RexGraphQL\Exception\Exception;
 
 class RexGraphQLAuth
 {
@@ -122,7 +123,7 @@ class RexGraphQLAuth
      */
     public static function protect(RexGraphQLContext $context): void {
         if(!isset($context->user) && $context->user === null) {
-            throw new \Exception(\rex_i18n::msg('logged_out'));
+            throw new Exception(\rex_i18n::msg('logged_out'));
         }
     }
 

@@ -11,6 +11,7 @@ return array(
     'Symfony\\Polyfill\\Intl\\Idn\\' => array($vendorDir . '/symfony/polyfill-intl-idn'),
     'Spatie\\Regex\\' => array($vendorDir . '/spatie/regex/src'),
     'Safe\\' => array($vendorDir . '/thecodingmachine/safe/lib', $vendorDir . '/thecodingmachine/safe/deprecated', $vendorDir . '/thecodingmachine/safe/generated'),
+    'RexGraphQL\\' => array($baseDir . '/'),
     'MLL\\GraphQLScalars\\' => array($vendorDir . '/mll-lab/graphql-php-scalars/src'),
     'GraphQL\\' => array($vendorDir . '/webonyx/graphql-php/src'),
     'Firebase\\JWT\\' => array($vendorDir . '/firebase/php-jwt/src'),

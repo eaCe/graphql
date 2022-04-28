@@ -5,7 +5,7 @@ namespace RexGraphQL\Type;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use GraphQL\Type\Definition\ObjectType;
-use RexGraphQL\RexGraphQLAuth;
+use RexGraphQL\RexGraphQLContext;
 
 class UserType extends ObjectType
 {
@@ -23,13 +23,8 @@ class UserType extends ObjectType
                 'role' => Type::string(),
                 'login_tries' => Type::string(),
             ],
-            'resolveField' => function ($root, $args, $context, ResolveInfo $info) {
-                $context->protect();
-
-                switch ($info->fieldName) {
-                    default:
-                        return $context->user->getValue($info->fieldName);
-                }
+            'resolveField' => function ($root, $args, RexGraphQLContext $context, ResolveInfo $info) {
+                return $context->user->getValue($info->fieldName);
             },
         ]);
     }

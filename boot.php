@@ -1,9 +1,9 @@
 <?php
+require 'lib/vendor/autoload.php';
 
 use RexGraphQL\Defaults\Mutation;
 use RexGraphQL\Defaults\Query;
 use RexGraphQL\RexGraphQL;
-use RexGraphQL\RexGraphQLAuth;
 
 rex_extension::register('PACKAGES_INCLUDED', static function () {
     /**
