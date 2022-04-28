@@ -24,7 +24,7 @@ class UserType extends ObjectType
                 'login_tries' => Type::string(),
             ],
             'resolveField' => function ($root, $args, $context, ResolveInfo $info) {
-                RexGraphQLAuth::protect($context);
+                $context->protect();
 
                 switch ($info->fieldName) {
                     default:

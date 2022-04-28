@@ -19,7 +19,7 @@ mutation {
 
 Der erhaltene Token muss dann im Header übergeben werden:
 `Authorization: Bearer <token>`.
-Der Zugriff auf Queries oder Mutations kann mit `RexGraphQLAuth::protect($context);` auf angemeldete User beschränkt werden.
+Der Zugriff auf Queries oder Mutations kann mit `$context->protect();` auf angemeldete User beschränkt werden.
 Siehe **[UserType](https://github.com/eaCe/graphql/blob/main/lib/Type/UserType.php#L27)**
 
 ---

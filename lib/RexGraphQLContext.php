@@ -3,7 +3,8 @@
 namespace RexGraphQL;
 
 class RexGraphQLContext
-{    public string $rootUrl;
+{
+    public string $rootUrl;
 
     /** @var array<string, mixed> */
     public array $request;
@@ -13,4 +14,11 @@ class RexGraphQLContext
 
     /** @var \rex_user|null */
     public ?\rex_user $user;
+
+    /**
+     * @throws \Exception
+     */
+    public function protect(): void {
+        RexGraphQLAuth::protect($this);
+    }
 }
