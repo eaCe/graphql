@@ -20,7 +20,7 @@ mutation {
 Der erhaltene Token muss dann im Header übergeben werden:
 `Authorization: Bearer <token>`.
 Der Zugriff auf Queries oder Mutations kann mit `$context->protect();` auf angemeldete User beschränkt werden.
-Siehe **[UserType](https://github.com/eaCe/graphql/blob/main/lib/Type/UserType.php#L27)**
+Siehe **[User Query](https://github.com/eaCe/graphql/blob/main/lib/Defaults/Query.php#L25)**
 
 ---
 
