@@ -15,20 +15,74 @@ class RexGraphQLAuth
      * @throws \Throwable
      */
     public static function login(string $username, string $password) {
+        $tableName = \rex::getTable('user');
         $login = new \rex_login();
-        $login->setLoginQuery('SELECT * FROM ' . \rex::getTable('user') . ' WHERE status = 1 AND login = :login');
+        $loginQuery = 'SELECT * FROM ' . $tableName .
+            ' WHERE status = 1 AND login = :login AND (login_tries < ' . \rex_backend_login::LOGIN_TRIES_1 .
+            ' OR login_tries < ' . \rex_backend_login::LOGIN_TRIES_2 . ' AND lasttrydate < "' . \rex_sql::datetime(time() - \rex_backend_login::RELOGIN_DELAY_1) .
+            '" OR lasttrydate < "' . \rex_sql::datetime(time() - \rex_backend_login::RELOGIN_DELAY_2) .
+            '")';
+        $login->setLoginQuery($loginQuery);
         $login->setLogin($username, $password, false);
         $loginCheck = $login->checkLogin();
 
         if ($loginCheck) {
             $user = $login->getUser();
+            self::resetLoginTries($tableName, $username);
+
             return [
                 'token' => self::getToken($user),
                 'refresh_token' => self::getToken($user, true)
             ];
         }
 
-        throw new \GraphQL\Error\UserError(\rex_i18n::msg('login_error'));
+        self::setLoginTries($tableName, $username);
+
+        throw new Exception(\rex_i18n::msg('login_error'));
+    }
+
+    /**
+     * reset login attempts
+     * @param string $tableName
+     * @param string $username
+     * @return void
+     * @throws \rex_sql_exception
+     */
+    private static function resetLoginTries(string $tableName, string $username): void {
+        $dateTime = \rex_sql::datetime();
+        $sql = \rex_sql::factory();
+        $sql->setTable($tableName)
+            ->setWhere('login = :login', [':login' => $username])
+            ->setValue('login_tries', 0)
+            ->setValue('lasttrydate', $dateTime)
+            ->setValue('lastlogin', $dateTime)
+            ->update();
+    }
+
+    /**
+     * update login attempts
+     * @param string $tableName
+     * @param string $username
+     * @return void
+     * @throws Exception
+     * @throws \rex_sql_exception
+     */
+    private static function setLoginTries(string $tableName, string $username): void {
+        $sql = \rex_sql::factory();
+        $sql->setQuery('SELECT login_tries FROM ' . $tableName . ' WHERE login=? LIMIT 1', [$username]);
+
+        if ($sql->getRows() > 0) {
+            $loginTries = $sql->getValue('login_tries');
+            $sql->setQuery('UPDATE ' . $tableName . ' SET login_tries=login_tries+1,session_id="",lasttrydate=? WHERE login=? LIMIT 1', [\rex_sql::datetime(), $username]);
+            if ($loginTries >= \rex_backend_login::LOGIN_TRIES_1 - 1) {
+                $time = $loginTries < \rex_backend_login::LOGIN_TRIES_2 ? \rex_backend_login::RELOGIN_DELAY_1 : \rex_backend_login::RELOGIN_DELAY_2;
+                $hours = floor($time / 3600);
+                $minutes = floor(($time - ($hours * 3600)) / 60);
+                $seconds = $time % 60;
+                $formatted = ($hours ? $hours . 'h ' : '') . ($hours || $minutes ? $minutes . 'min ' : '') . $seconds . 's';
+                throw new Exception(\rex_i18n::rawMsg('login_wait', $formatted));
+            }
+        }
     }
 
     /**
@@ -122,7 +176,7 @@ class RexGraphQLAuth
      * @throws \Exception
      */
     public static function protect(RexGraphQLContext $context): void {
-        if(!isset($context->user) && $context->user === null) {
+        if (!isset($context->user) && $context->user === null) {
             throw new Exception(\rex_i18n::msg('logged_out'));
         }
     }
@@ -133,10 +187,10 @@ class RexGraphQLAuth
      * @return \rex_user|void|null
      */
     public static function getContextUser($headers) {
-        if(isset($headers['Authorization'])) {
+        if (isset($headers['Authorization'])) {
             $token = self::getAuthorizationBearerToken($headers['Authorization']);
 
-            if(self::checkToken($token)) {
+            if (self::checkToken($token)) {
                 return self::getUserFromToken($token) ?: null;
             }
         }
