@@ -185,3 +185,15 @@ Und das Resultat:
   }
 }
 ```
+
+
+## Credits
+
+**PHP-JWT**
+https://github.com/firebase/php-jwt
+
+**graphql-php**
+https://github.com/webonyx/graphql-php
+
+**GraphQL IDE**
+https://github.com/graphql/graphiql
