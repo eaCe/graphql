@@ -105,10 +105,10 @@ class RexGraphQLAuth
     private static function getToken(\rex_sql $user, bool $refreshToken = false): string {
         $secret = \rex_config::get('graphql', 'key');
         $issuedAt = new \DateTimeImmutable();
-        $expire = $issuedAt->modify('+10 minutes')->getTimestamp();
+        $expire = $issuedAt->modify('+15 minutes')->getTimestamp();
 
         if ($refreshToken) {
-            $expire = $issuedAt->modify('+15 days')->getTimestamp();
+            $expire = $issuedAt->modify('+7 days')->getTimestamp();
         }
 
         $data = [
