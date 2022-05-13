@@ -38,12 +38,12 @@
             'dev_requirement' => false,
         ),
         'firebase/php-jwt' => array(
-            'pretty_version' => 'v6.1.1',
-            'version' => '6.1.1.0',
+            'pretty_version' => 'v6.1.2',
+            'version' => '6.1.2.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../firebase/php-jwt',
             'aliases' => array(),
-            'reference' => 'e67638d067a537731e3f9c03e097c7c1b1f31fe8',
+            'reference' => 'c297139da7c6873dbd67cbd1093f09ec0bbd0c50',
             'dev_requirement' => false,
         ),
         'mll-lab/graphql-php-scalars' => array(
@@ -56,12 +56,12 @@
             'dev_requirement' => false,
         ),
         'spatie/regex' => array(
-            'pretty_version' => '1.4.2',
-            'version' => '1.4.2.0',
+            'pretty_version' => '3.1.1',
+            'version' => '3.1.1.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../spatie/regex',
             'aliases' => array(),
-            'reference' => '1500ed75af430df3a32047494c43d79d45cf152b',
+            'reference' => 'd543de2019a0068e7b80da0ba24f1c51c7469303',
             'dev_requirement' => false,
         ),
         'symfony/polyfill-intl-idn' => array(
@@ -92,12 +92,12 @@
             'dev_requirement' => false,
         ),
         'thecodingmachine/safe' => array(
-            'pretty_version' => 'v1.3.3',
-            'version' => '1.3.3.0',
+            'pretty_version' => 'v2.1.4',
+            'version' => '2.1.4.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../thecodingmachine/safe',
             'aliases' => array(),
-            'reference' => 'a8ab0876305a4cdaef31b2350fcb9811b5608dbc',
+            'reference' => 'b206c2671d3601d40389013cf550b14fb4db2814',
             'dev_requirement' => false,
         ),
         'webonyx/graphql-php' => array(
