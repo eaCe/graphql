@@ -187,8 +187,17 @@ class RexGraphQLAuth
      * @return \rex_user|void|null
      */
     public static function getContextUser($headers) {
+        $authHeader = null;
+
         if (isset($headers['Authorization'])) {
-            $token = self::getAuthorizationBearerToken($headers['Authorization']);
+            $authHeader = $headers['Authorization'];
+        }
+        elseif (isset($headers['authorization'])) {
+            $authHeader = $headers['authorization'];
+        }
+
+        if ($authHeader) {
+            $token = self::getAuthorizationBearerToken($authHeader);
 
             if (self::checkToken($token)) {
                 return self::getUserFromToken($token) ?: null;
