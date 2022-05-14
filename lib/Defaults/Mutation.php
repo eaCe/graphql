@@ -4,6 +4,7 @@ namespace RexGraphQL\Defaults;
 
 use RexGraphQL\RexGraphQL;
 use RexGraphQL\Types;
+use GraphQL\Type\Definition\Type;
 
 class Mutation
 {
@@ -20,8 +21,8 @@ class Mutation
                 'type' => Types::token(),
                 'description' => 'Login an receive a JWT Token',
                 'args' => [
-                    'user' => Types::string(),
-                    'password' => Types::string(),
+                    'user' => Type::nonNull(Types::string()),
+                    'password' => Type::nonNull(Types::string()),
                 ],
             ],
         ];
