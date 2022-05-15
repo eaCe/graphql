@@ -195,6 +195,12 @@ class RexGraphQLAuth
         elseif (isset($headers['authorization'])) {
             $authHeader = $headers['authorization'];
         }
+        elseif (isset($headers['token'])) {
+            $authHeader = $headers['token'];
+        }
+        elseif (isset($headers['Token'])) {
+            $authHeader = $headers['Token'];
+        }
 
         if ($authHeader) {
             $token = self::getAuthorizationBearerToken($authHeader);
