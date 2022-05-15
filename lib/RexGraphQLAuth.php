@@ -129,7 +129,13 @@ class RexGraphQLAuth
      */
     private static function checkToken(string $token): bool {
         $secret = \rex_config::get('graphql', 'key');
-        $decodedToken = JWT::decode($token, new Key($secret, 'HS256'));
+        try {
+            $decodedToken = JWT::decode($token, new Key($secret, 'HS256'));
+        }
+        catch (\Firebase\JWT\ExpiredException $e) {
+            http_response_code(401);
+            die();
+        }
         $now = new \DateTimeImmutable();
 
         return !($decodedToken->iss !== \rex::getServer() ||
@@ -156,6 +162,7 @@ class RexGraphQLAuth
         if ($authorizationHeader === '') {
             return false;
         }
+
         // parse "Authorization: Bearer <token>"
         $matches = null;
         if (preg_match('/Bearer\s(\S+)/', $authorizationHeader, $matches)
