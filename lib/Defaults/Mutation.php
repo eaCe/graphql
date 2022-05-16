@@ -21,7 +21,7 @@ class Mutation
         $loginMutation = [
             'login' => [
                 'type' => Types::token(),
-                'description' => 'Login an receive a JWT Token',
+                'description' => 'Login and receive a JWT Token',
                 'args' => [
                     'user' => Type::nonNull(Types::string()),
                     'password' => Type::nonNull(Types::string()),
