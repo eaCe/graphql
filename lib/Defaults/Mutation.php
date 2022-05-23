@@ -33,5 +33,23 @@ class Mutation
         ];
 
         RexGraphQL::addMutation($loginMutation);
+
+        /**
+         * login an receive a JWT
+         */
+        $refreshTokenMutation = [
+            'refreshToken' => [
+                'type' => Types::token(),
+                'description' => 'Receive a JWT Token',
+                'args' => [
+                    'refresh_token' => Type::nonNull(Types::string()),
+                ],
+                'resolve' => static function ($args, $root, $context, ResolveInfo $info) {
+                    return RexGraphQLAuth::refreshTokenSet($root['user'], $root['refresh_token']);
+                },
+            ],
+        ];
+
+        RexGraphQL::addMutation($refreshTokenMutation);
     }
 }

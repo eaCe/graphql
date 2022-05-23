@@ -5,7 +5,6 @@ namespace RexGraphQL\Type;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use GraphQL\Type\Definition\ObjectType;
-use RexGraphQL\RexGraphQLAuth;
 
 class TokenType extends ObjectType
 {

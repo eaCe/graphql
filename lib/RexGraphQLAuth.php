@@ -96,6 +96,25 @@ class RexGraphQLAuth
     }
 
     /**
+     * refresh the token set
+     * @param \rex_sql $user
+     * @param string $refreshToken
+     * @return array
+     * @throws \rex_sql_exception
+     * @throws Exception
+     */
+    public static function refreshTokenSet(\rex_sql $user, string $refreshToken): array {
+        if (!self::checkToken($refreshToken)) {
+            throw new Exception('Token expired');
+        }
+
+        return [
+            'token' => self::getToken($user),
+            'refresh_token' => self::getToken($user, true)
+        ];
+    }
+
+    /**
      * get the jwt for the logged in user
      * @param \rex_sql $user
      * @param bool $refreshToken
