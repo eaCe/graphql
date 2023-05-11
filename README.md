@@ -1,4 +1,4 @@
-# :construction: WIP GraphQL für REDAXO 5
+# :warning: Das Addon wird nicht weiterentwickelt. Die Alternative: https://github.com/FriendsOfREDAXO/graphql/
 
 Das Addon nutzt [graphql-php](https://github.com/webonyx/graphql-php) und bindet im Backend [GraphiQL](https://github.com/graphql/graphiql) zum testen der Queries ein.
 
